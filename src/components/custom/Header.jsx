@@ -113,11 +113,11 @@ function Header() {
 
 
         <Popover>
-  <PopoverTrigger> <img 
+  {/* <PopoverTrigger> <img 
               src={users.picture} // Display user profile picture
               alt="name" // Alt text should describe the image content
               className='h-[50px] w-[50px] rounded-full object-cover' // Added rounded and object-cover for better UI
-            /></PopoverTrigger>
+            /></PopoverTrigger> */}
   <PopoverContent><h2 onClick={()=>{
     googleLogout();
   localStorage.clear();
