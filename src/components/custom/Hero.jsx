@@ -31,7 +31,13 @@ function Hero() {
   </div>
     </Box>
     <div className="flex items-center justify-center h-screen">
-  
+    <div className="flex items-center justify-center h-screen">
+  <img
+    className="w-[1000px] h-[1000px]"
+    src="/trip.jpg"
+    alt="Trip"
+  />
+</div>
 </div>
     </>
   );
