@@ -43,7 +43,7 @@ function MyTrips() {
                 <Link to={"/view-trip/"+trip.id}>
               <img
                 src="/trip.jpg"// Assuming you have an imageURL in your trip data
-                alt={trip.location} // Use location as alt text
+                alt="trip image" // Use location as alt text
                 className='h-40 w-full object-cover rounded-md mb-4'
               />
               <h2 className='text-lg font-semibold'>{trip.userSelection.location}</h2>

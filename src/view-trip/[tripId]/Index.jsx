@@ -169,7 +169,7 @@ function ViewTrip() {
                 <div className="cursor-pointer">
                   <img
                     src={images[hotel.hotelName] || "/trip.jpg"}
-                    alt={hotel.hotelName}
+                    alt="hotelname"
                     className="rounded-xl w-40 h-40 object-cover"
                     style={{ width: "160px", height: "160px" }}
                   />
@@ -214,7 +214,7 @@ function ViewTrip() {
                       <div className="w-40 h-40">
                         <img
                           src={images[place.placeName] || "/trip.jpg"}
-                          alt={place.placeName}
+                          alt="placename"
                           className="rounded-xl w-40 h-40 object-cover"
                           style={{ width: "160px", height: "160px" }}
                         />
