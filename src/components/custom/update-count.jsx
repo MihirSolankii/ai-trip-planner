@@ -9,7 +9,7 @@ const navigate=useNavigate();
   const verifyPayment = async () => {
     try {
       // Pass the sessionId in the query string
-      const response = await axios.get(`https://backend-ai-trip-planner-4.onrender.com?session_id=${sessionId}`);
+      const response = await axios.get(`https://backend-ai-trip-planner-5.onrender.com/update-trip-count?session_id=${sessionId}`);
       
       console.log(response.data);
     //   Additional logic for handling the response

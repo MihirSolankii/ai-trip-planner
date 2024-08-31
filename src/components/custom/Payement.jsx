@@ -38,7 +38,7 @@ function PaymentOptions() {
     setLoadingPlan(index);
 
     try {
-      const { data } = await axios.post('https://backend-ai-trip-planner-4.onrender.com/create-checkout-session', {
+      const { data } = await axios.post('https://backend-ai-trip-planner-5.onrender.com/create-checkout-session', {
         email:users.email,
         amount: price // Pass the plan price
       });
@@ -87,7 +87,7 @@ function PaymentOptions() {
             onClick={() => handleCheckout(plan.price, index)}
             disabled={loading && loadingPlan === index}
           >
-            {loading && loadingPlan === index ? 'Processing...' : `Upgrade for Rs.${(plan.price / 100).toFixed(2)}`}
+            {loading && loadingPlan === index ? 'Processing...' : `Upgrade for Rs.$${(plan.price / 100).toFixed(2)}`}
           </button>
         </div>
       </div>
