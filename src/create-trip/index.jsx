@@ -165,7 +165,7 @@ setLoading(false)
     await incrementUserTripCount();
   setLoading(false)
 
-  // route("/view-trip/"+docId)
+   route("/view-trip/"+docId)
   }
 
   const incrementUserTripCount = async () => {
