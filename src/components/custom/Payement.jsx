@@ -38,7 +38,7 @@ function PaymentOptions() {
     setLoadingPlan(index);
 
     try {
-      const { data } = await axios.post('https://backend-ai-trip-planner-5.onrender.com/create-checkout-session', {
+      const { data } = await axios.post('https://backend-ai-trip-planner-6.onrender.com/create-checkout-session', {
         email:users.email,
         amount: price 
       });
