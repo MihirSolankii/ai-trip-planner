@@ -87,7 +87,7 @@ function PaymentOptions() {
             onClick={() => handleCheckout(plan.price, index)}
             disabled={loading && loadingPlan === index}
           >
-            {loading && loadingPlan === index ? 'Processing...' : `Upgrade for Rs.$${(plan.price / 100).toFixed(2)}`}
+            {loading && loadingPlan === index ? 'Processing...' : `Upgrade for $${(plan.price / 100).toFixed(2)}`}
           </button>
         </div>
       </div>
