@@ -15,7 +15,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { getDoc } from 'firebase/firestore';
 import { updateDoc } from 'firebase/firestore';
-
+import axios from 'axios';
 import gif from "../imges/1488.gif"
 import {
   Dialog,
@@ -73,35 +73,27 @@ function CreateTrip() {
     fetchTripCount();
   }, []);
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        });
-        const userInfo = await userInfoResponse.json();
-        localStorage.setItem("user",JSON.stringify(userInfo))
-        // Save user data to backend
-        await fetch('http://localhost:5000/api/saveUser', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            googleId: userInfo.sub,
-            name: userInfo.name,
-            email: userInfo.email,
-            picture: userInfo.picture,
-          }),
-        });
+    // onSuccess: async (tokenResponse) => {
+    //   try {
+    //     const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    //       headers: {
+    //         Authorization: `Bearer ${tokenResponse.access_token}`,
+    //       },
+    //     });
+    //     const userInfo = await userInfoResponse.json();
+    //     localStorage.setItem("user",JSON.stringify(userInfo))
+
+    
+       
   
-        setOpenDialog(false);
-        onGenerateTrip();
-      } catch (error) {
-        console.error("Error saving user data:", error);
-      }
-    },
+    //     setOpenDialog(false);
+    //     onGenerateTrip();
+    //   } catch (error) {
+    //     console.error("Error saving user data:", error);
+    //   }
+    // },
+    onSuccess:(CodeResp)=>getUserProfile(CodeResp),
+    
     onError: (error) => console.log("Login Failed:", error),
   });
  
@@ -201,10 +193,10 @@ setLoading(false)
 
       }
     } catch (error) {
-      // Detailed error logging
+     
       console.error("Error incrementing trip count:", error.message);
   
-      // Extra debug information if the error is related to 'indexOf'
+   
       if (error.message.includes('indexOf')) {
         console.error("Check the localStorage user object and Firestore document reference.");
       }
@@ -213,20 +205,22 @@ setLoading(false)
   
   
   const getUserProfile = (tokenInfo) => {
-    console.log("Received token info:", tokenInfo.access_token); // Check if token info is received
+    console.log("Received token info:", tokenInfo.access_token); 
   
-    axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${tokenInfo?.access_token}`, {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
       headers: {
-        Authorization: `Bearer ${tokenInfo?.access_token}`,
-        Accept: 'application/json'
+        Authorization: `Bearer ${tokenInfo?.access_token}`, 
       }
     }).then((resp) => {
-      console.log("User profile data:", resp.data); // Log the user profile data
+      console.log("User profile data:", resp.data);
+      localStorage.setItem("user",JSON.stringify(resp.data))
+      setOpenDialog(false);
+           onGenerateTrip();
     }).catch((err) => {
       console.error("Error fetching user profile:", err.response ? err.response.data : err); // Log any errors
     });
-};
-
+  };
+  
   return (
     <Box
       sx={{
@@ -348,7 +342,7 @@ setLoading(false)
       <DialogDescription>
         <img src='/logo.svg'/>
         <h2 className='font-bold text-lg mt-7'>Sign in With Google</h2>
-        <p>Sing in to the app with google authentication securly</p>
+        <p>Sign in to the app with google authentication securly</p>
         <Button onClick={login} className="w-full mt-5 flex gap-4 items-center"><FcGoogle className='h-7 w-7'/> Sign in With Google</Button>
       </DialogDescription>
     </DialogHeader>

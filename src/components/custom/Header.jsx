@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { BorderAll } from '@mui/icons-material';
 import { useGoogleLogin } from '@react-oauth/google';
 import { FcGoogle } from "react-icons/fc";
-
+import axios from 'axios';
 import {
   Popover,
   PopoverContent,
@@ -32,34 +32,39 @@ function Header() {
   
   const theme = useTheme();
   const colorMode = useColorMode();
-  const users = JSON.parse(localStorage.getItem('user')); // Fetch the user data from localStorage
+  const user = JSON.parse(localStorage.getItem('user')); // Fetch the user data from localStorage
   const[openDialog,setOpenDialog]=useState(false);
 
 
   useEffect(() => {
-    console.log(users); // Debug: Check the user data
+    console.log(user); // Debug: Check the user data
   }, []);
 
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        });
-        const userInfo = await userInfoResponse.json();
-        localStorage.setItem("user",JSON.stringify(userInfo))
-        // Save user data to backend
-       
-        setOpenDialog(false);
-        window.location.reload();
-      } catch (error) {
-        console.error("Error saving user data:", error);
-      }
-    },
+    onSuccess:(CodeResp)=>getUserProfile(CodeResp),
+    
     onError: (error) => console.log("Login Failed:", error),
   });
+
+  const getUserProfile = (tokenInfo) => {
+    console.log("Received token info:", tokenInfo.access_token); 
+  
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        
+       
+      }
+    }).then((resp) => {
+      console.log("User profile data:", resp);
+      localStorage.setItem("user",JSON.stringify(resp.data))
+      setOpenDialog(false);
+      window.location.reload();
+      
+    }).catch((err) => {
+      console.error("Error fetching user profile:", err.response ? err.response.data : err); // Log any errors
+    });
+  };
   const handleUpgradePlan = () => {
     // Redirect to the payment page (Stripe checkout or another payment processor)
     window.location.href="/payment" // Replace with your actual payment page route
@@ -75,22 +80,33 @@ function Header() {
       <div onClick={()=>{window.location.href="/"}}>
       <img src='/OIP.jpg' alt='logo'  height="150px" width="150px"/>
       </div>
-      {/* Right side: Buttons, profile image, and theme toggle */}
+      
       <div className='flex items-center gap-4'>
-        {users ? (
-          <>
-           <a href='/my-trips'>
-          {theme.palette.mode === "dark" ? (
-              <Button variant="outline" style={{ backgroundColor: theme.palette.background.default, color: "white"}}>My Trip</Button>
-            ) : (
-              <Button variant="secondary" style={{ backgroundColor: theme.palette.background.primary, borderColor: "black", // Add this line for a black border
-                borderWidth: "1px", // Set the border width (optional)
-                borderStyle: "solid" }}>My Trip</Button>
-            )}
-            </a>
-          
 
-          </>
+      {theme.palette.mode === "dark" ? (
+<Button onClick={handleUpgradePlan} variant="outline" style={{ backgroundColor: theme.palette.background.default, color: "white" }} >
+          Upgrade Plan
+        </Button>):(<Button onClick={handleUpgradePlan} variant="outline" style={{ backgroundColor: theme.palette.background.primary, borderColor: "black",borderStyle:"solid" }} >
+          Upgrade Plan
+        </Button>)}
+        {user ? (
+          <div className='flex items-center gap-4'>
+           <a href='/my-trips'>
+          <Button variant="">My Trips</Button>
+          
+          </a>
+          <Popover>
+          <PopoverTrigger>
+          <img  className='h-[50px] w-[50px] rounded-full object-cover' src={user.picture} />
+          </PopoverTrigger>
+          <PopoverContent><h2 onClick={()=>{
+    googleLogout();
+  localStorage.clear();
+  window.location.reload();
+
+  }}>Logout</h2></PopoverContent>
+</Popover>
+          </div>
         ) : (
           <>
             {theme.palette.mode === "dark" ? (
@@ -103,28 +119,11 @@ function Header() {
             )}
           </>
         )}
-{theme.palette.mode === "dark" ? (
-<Button onClick={handleUpgradePlan} variant="outline" style={{ backgroundColor: theme.palette.background.default, color: "white" }} >
-          Upgrade Plan
-        </Button>):(<Button onClick={handleUpgradePlan} variant="outline" style={{ backgroundColor: theme.palette.background.primary, borderColor: "black",borderStyle:"solid" }} >
-          Upgrade Plan
-        </Button>)}
+
         {/* Theme Toggle Button */}
 
 
-        <Popover>
-  <PopoverTrigger> <img 
-              src='/logo.svg'
-              alt="name" // Alt text should describe the image content
-              className='h-[50px] w-[50px] rounded-full object-cover' // Added rounded and object-cover for better UI
-            /></PopoverTrigger>
-  <PopoverContent><h2 onClick={()=>{
-    googleLogout();
-  localStorage.clear();
-  window.location.reload();
-
-  }}>Logout</h2></PopoverContent>
-</Popover>
+      
         <Dialog open={openDialog}>
   
   <DialogContent>
@@ -133,7 +132,7 @@ function Header() {
       <DialogDescription>
         <img src='/logo.svg'/>
         <h2 className='font-bold text-lg mt-7'>Sign in With Google</h2>
-        <p>Sing in to the app with google authentication securly</p>
+        <p>Sign in to the app with google authentication securly</p>
         <Button onClick={login} className="w-full mt-5 flex gap-4 items-center"><FcGoogle className='h-7 w-7'/> Sign in With Google</Button>
       </DialogDescription>
     </DialogHeader>
